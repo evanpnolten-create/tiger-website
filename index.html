@@ -1,52 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>All About Tigers</title>
-    <style>
-        body {
-            font-family: 'Georgia', serif;
-            background-color: #fffbe6;
-            color: #3b2f2f;
-            margin: 40px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        h1 {
-            color: #cc3300;
-            text-align: center;
-        }
-        p {
-            font-size: 1.1rem;
-            line-height: 1.5;
-        }
-        img {
-            display: block;
-            margin: 20px auto;
-            max-width: 100%;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            font-size: 0.9rem;
-            color: #777;
-        }
-    </style>
+<meta charset="UTF-8" />
+<title>Tabbed Tiger Website</title>
+<style>
+    body {
+        font-family: 'Georgia', serif;
+        background-color: #fffbe6;
+        color: #3b2f2f;
+        margin: 40px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    h1 {
+        color: #cc3300;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .tabs {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #cc3300;
+    }
+    .tab-button {
+        background: none;
+        border: none;
+        border-bottom: 4px solid transparent;
+        margin: 0 10px;
+        font-size: 1.1rem;
+        padding: 10px 15px;
+        cursor: pointer;
+        color: #cc3300;
+        transition: border-bottom-color 0.3s;
+    }
+    .tab-button.active {
+        border-bottom-color: #cc3300;
+        font-weight: bold;
+    }
+    .tab-content {
+        display: none;
+        padding: 15px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .tab-content.active {
+        display: block;
+    }
+    img {
+        display: block;
+        margin: 20px auto;
+        max-width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    footer {
+        text-align: center;
+        margin-top: 40px;
+        font-size: 0.9rem;
+        color: #777;
+    }
+</style>
 </head>
 <body>
-    <h1>All About Tigers</h1>
+
+<h1>All About Tigers</h1>
+
+<div class="tabs">
+    <button class="tab-button active" data-tab="overview">Overview</button>
+    <button class="tab-button" data-tab="habitat">Habitat</button>
+    <button class="tab-button" data-tab="behavior">Behavior</button>
+</div>
+
+<div id="overview" class="tab-content active">
     <p>
         Tigers are the largest members of the cat family and are known for their beautiful striped coats.
-        They are found mainly in Asia and are apex predators, playing a crucial role in maintaining the balance of their ecosystems.
+        They are apex predators and play a crucial role in maintaining ecosystem balance.
     </p>
     <img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Tiger.50.jpg" alt="Tiger" />
+</div>
+
+<div id="habitat" class="tab-content">
     <p>
-        Tigers are solitary and territorial animals. They hunt primarily at night and rely on their keen senses and powerful build to catch prey.
-        Unfortunately, tiger populations are endangered due to habitat loss and poaching.
+        Tigers are mostly found in diverse habitats ranging from tropical forests,
+        mangroves, grasslands to savannas across Asia. They require dense vegetation and
+        water sources to thrive.
     </p>
-    <footer>Image credit: Wikimedia Commons / Gerald Cubitt</footer>
+</div>
+
+<div id="behavior" class="tab-content">
+    <p>
+        Tigers are solitary animals and primarily hunt at night. They rely on stealth and
+        power to hunt prey. Their magnificent stripes serve as camouflage in dense forests.
+    </p>
+    <p>
+        Unfortunately, they face threats like habitat loss and poaching, leading to declining populations.
+    </p>
+</div>
+
+<footer>Image credit: Wikimedia Commons / Gerald Cubitt</footer>
+
+<script>
+    // Tab switching functionality
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove active from all buttons and contents
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Add active to clicked button and corresponding content
+            button.classList.add('active');
+            document.getElementById(button.dataset.tab).classList.add('active');
+        });
+    });
+</script>
+
 </body>
 </html>
+
