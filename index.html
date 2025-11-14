@@ -2,124 +2,144 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Tabbed Tiger Website</title>
+<title>Interactive Tiger Habitat</title>
 <style>
-    body {
-        font-family: 'Georgia', serif;
-        background-color: #fffbe6;
-        color: #3b2f2f;
-        margin: 40px;
-        max-width: 700px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    h1 {
-        color: #cc3300;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .tabs {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #cc3300;
-    }
-    .tab-button {
-        background: none;
-        border: none;
-        border-bottom: 4px solid transparent;
-        margin: 0 10px;
-        font-size: 1.1rem;
-        padding: 10px 15px;
-        cursor: pointer;
-        color: #cc3300;
-        transition: border-bottom-color 0.3s;
-    }
-    .tab-button.active {
-        border-bottom-color: #cc3300;
-        font-weight: bold;
-    }
-    .tab-content {
-        display: none;
-        padding: 15px;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
-    .tab-content.active {
-        display: block;
-    }
-    img {
-        display: block;
-        margin: 20px auto;
-        max-width: 100%;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
-    footer {
-        text-align: center;
-        margin-top: 40px;
-        font-size: 0.9rem;
-        color: #777;
-    }
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fffbe6;
+    color: #333;
+  }
+  h1 {
+    text-align: center;
+    color: #cc3300;
+    margin-bottom: 20px;
+  }
+  #map {
+    border: 2px solid #cc3300;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    position: relative;
+  }
+  .region {
+    fill: #fabf8f;
+    stroke: #cc3300;
+    stroke-width: 2;
+    cursor: pointer;
+    transition: fill 0.3s ease;
+  }
+  .region:hover {
+    fill: #ff7f2a;
+  }
+  .info-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+  .tab {
+    background: #cc3300;
+    color: white;
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-radius: 4px 4px 0 0;
+    user-select: none;
+  }
+  .tab.active {
+    background: #ff7f2a;
+    font-weight: bold;
+  }
+  .tab-content {
+    display: none;
+    padding: 15px;
+    border: 2px solid #cc3300;
+    border-top: none;
+    border-radius: 0 8px 8px 8px;
+    background: white;
+  }
+  .tab-content.active {
+    display: block;
+  }
+  .tab-content img {
+    max-width: 100%;
+    border-radius: 6px;
+    margin-top: 10px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+  }
 </style>
 </head>
 <body>
 
-<h1>All About Tigers</h1>
+<h1>Interactive Tiger Habitat Map</h1>
 
-<div class="tabs">
-    <button class="tab-button active" data-tab="overview">Overview</button>
-    <button class="tab-button" data-tab="habitat">Habitat</button>
-    <button class="tab-button" data-tab="behavior">Behavior</button>
+<!-- Simplified SVG map to represent three tiger habitats -->
+<svg id="map" width="800" height="300" aria-label="Tiger habitats map">
+  <rect id="bengal" class="region" x="50" y="30" width="200" height="240" />
+  <rect id="siberian" class="region" x="300" y="30" width="200" height="240" />
+  <rect id="sumatran" class="region" x="550" y="30" width="200" height="240" />
+</svg>
+
+<div class="info-tabs">
+  <div class="tab active" data-tab="bengal-info">Bengal Tiger</div>
+  <div class="tab" data-tab="siberian-info">Siberian Tiger</div>
+  <div class="tab" data-tab="sumatran-info">Sumatran Tiger</div>
 </div>
 
-<div id="overview" class="tab-content active">
-    <p>
-        Tigers are the largest members of the cat family and are known for their beautiful striped coats.
-        They are apex predators and play a crucial role in maintaining ecosystem balance.
-    </p>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Tiger.50.jpg" alt="Tiger" />
+<div id="bengal-info" class="tab-content active">
+  <h2>Bengal Tiger</h2>
+  <p>The Bengal tiger is found mainly in India and Bangladesh. It is the most numerous tiger subspecies, known for its vibrant orange coat with black stripes.</p>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/2/25/BengalTiger.jpg" alt="Bengal Tiger" />
+  <p><strong>Conservation Status:</strong> Endangered</p>
 </div>
 
-<div id="habitat" class="tab-content">
-    <p>
-        Tigers are mostly found in diverse habitats ranging from tropical forests,
-        mangroves, grasslands to savannas across Asia. They require dense vegetation and
-        water sources to thrive.
-    </p>
+<div id="siberian-info" class="tab-content">
+  <h2>Siberian Tiger</h2>
+  <p>The Siberian tiger inhabits the Russian Far East. It is the largest tiger subspecies and has a thicker, paler coat to survive cold winters.</p>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Tiger.50.jpg" alt="Siberian Tiger" />
+  <p><strong>Conservation Status:</strong> Endangered</p>
 </div>
 
-<div id="behavior" class="tab-content">
-    <p>
-        Tigers are solitary animals and primarily hunt at night. They rely on stealth and
-        power to hunt prey. Their magnificent stripes serve as camouflage in dense forests.
-    </p>
-    <p>
-        Unfortunately, they face threats like habitat loss and poaching, leading to declining populations.
-    </p>
+<div id="sumatran-info" class="tab-content">
+  <h2>Sumatran Tiger</h2>
+  <p>Native to the Indonesian island of Sumatra, this tiger is smaller and darker with thicker stripes, adapted to dense tropical forests.</p>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/f/fd/Sumatran-tiger-edit.jpg" alt="Sumatran Tiger" />
+  <p><strong>Conservation Status:</strong> Critically Endangered</p>
 </div>
-
-<footer>Image credit: Wikimedia Commons / Gerald Cubitt</footer>
 
 <script>
-    // Tab switching functionality
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const tabContents = document.querySelectorAll('.tab-content');
+  // Tab switching
+  const tabs = document.querySelectorAll('.tab');
+  const contents = document.querySelectorAll('.tab-content');
+  const mapRegions = {
+    bengal: document.getElementById('bengal'),
+    siberian: document.getElementById('siberian'),
+    sumatran: document.getElementById('sumatran')
+  };
 
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Remove active from all buttons and contents
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
-
-            // Add active to clicked button and corresponding content
-            button.classList.add('active');
-            document.getElementById(button.dataset.tab).classList.add('active');
-        });
+  function activateTab(tabName) {
+    tabs.forEach(tab => {
+      tab.classList.toggle('active', tab.dataset.tab === tabName + '-info');
     });
+    contents.forEach(content => {
+      content.classList.toggle('active', content.id === tabName + '-info');
+    });
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      activateTab(tab.dataset.tab.replace('-info', ''));
+    });
+  });
+
+  Object.keys(mapRegions).forEach(region => {
+    mapRegions[region].addEventListener('click', () => {
+      activateTab(region);
+    });
+  });
 </script>
 
 </body>
 </html>
+
 
