@@ -1,145 +1,469 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-gray-900">
 <head>
-<meta charset="UTF-8" />
-<title>Interactive Tiger Habitat</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    max-width: 900px;
-    margin: 40px auto;
-    background: #fffbe6;
-    color: #333;
-  }
-  h1 {
-    text-align: center;
-    color: #cc3300;
-    margin-bottom: 20px;
-  }
-  #map {
-    border: 2px solid #cc3300;
-    border-radius: 8px;
-    margin-bottom: 30px;
-    position: relative;
-  }
-  .region {
-    fill: #fabf8f;
-    stroke: #cc3300;
-    stroke-width: 2;
-    cursor: pointer;
-    transition: fill 0.3s ease;
-  }
-  .region:hover {
-    fill: #ff7f2a;
-  }
-  .info-tabs {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 15px;
-  }
-  .tab {
-    background: #cc3300;
-    color: white;
-    padding: 10px 20px;
-    margin: 0 5px;
-    cursor: pointer;
-    border-radius: 4px 4px 0 0;
-    user-select: none;
-  }
-  .tab.active {
-    background: #ff7f2a;
-    font-weight: bold;
-  }
-  .tab-content {
-    display: none;
-    padding: 15px;
-    border: 2px solid #cc3300;
-    border-top: none;
-    border-radius: 0 8px 8px 8px;
-    background: white;
-  }
-  .tab-content.active {
-    display: block;
-  }
-  .tab-content img {
-    max-width: 100%;
-    border-radius: 6px;
-    margin-top: 10px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-  }
-</style>
+    <meta charset="UTF-T">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organic Chemistry: Proof of Concept</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Custom styles for the app */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom scrollbar for a more modern feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111827; /* gray-900 */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151; /* gray-700 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563; /* gray-600 */
+        }
+
+        /* Simple floating animation for background elements */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Benzene ring SVG */
+        .benzene-svg {
+            stroke: #34d399; /* emerald-400 */
+            stroke-width: 8;
+        }
+        
+        /* Methane SVG */
+        .methane-svg .carbon {
+            fill: #6b7280; /* gray-500 */
+        }
+        .methane-svg .hydrogen {
+            fill: #d1d5db; /* gray-300 */
+        }
+        .methane-svg .bond {
+            stroke: #6b7280; /* gray-500 */
+            stroke-width: 4;
+        }
+        
+        /* Ethanol SVG */
+        .ethanol-svg .carbon {
+            fill: #6b7280; /* gray-500 */
+        }
+        .ethanol-svg .hydrogen {
+            fill: #d1d5db; /* gray-300 */
+        }
+        .ethanol-svg .oxygen {
+            fill: #ef4444; /* red-500 */
+        }
+        .ethanol-svg .bond {
+            stroke: #6b7280; /* gray-500 */
+            stroke-width: 4;
+        }
+    </style>
 </head>
-<body>
+<body class="h-full text-gray-200 overflow-hidden">
+    <div class="flex h-full">
+        <!-- 
+            Sidebar Navigation 
+            - Collapsible on smaller screens
+        -->
+        <div id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 bg-gray-950 border-r border-gray-800 transform transition-transform duration-300 ease-in-out -translate-x-full md:translate-x-0 md:static md:inset-0">
+            <div class="flex items-center justify-between h-16 px-4 border-b border-gray-800">
+                <div class="flex items-center">
+                    <!-- Atom Icon SVG -->
+                    <svg class="h-8 w-8 text-emerald-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="1"/>
+                        <path d="M20.2 20.2c2.04-2.04 2.04-5.38 0-7.42"/>
+                        <path d="M3.8 3.8c-2.04 2.04-2.04 5.38 0 7.42"/>
+                        <path d="M20.2 3.8c-2.04 2.04-5.38 2.04-7.42 0"/>
+                        <path d="M3.8 20.2c2.04-2.04 5.38-2.04 7.42 0"/>
+                        <path d="M12 12h.01"/>
+                        <path d="M12 12h.01"/>
+                        <path d="m12 19-1.5-3"/>
+                        <path d="m12 5 1.5 3"/>
+                        <path d="m19 12-3 1.5"/>
+                        <path d="m5 12 3-1.5"/>
+                    </svg>
+                    <span class="ml-3 text-lg font-bold text-white">OrgChem Portal</span>
+                </div>
+                <!-- Close button for mobile -->
+                <button id="close-sidebar-btn" class="md:hidden text-gray-400 hover:text-white">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <nav class="flex-1 space-y-2 py-4 px-2">
+                <a href="#" class="group flex items-center px-3 py-2 text-base font-medium rounded-md bg-gray-900 text-emerald-400">
+                    <!-- Home Icon -->
+                    <svg class="mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    Dashboard
+                </a>
+                <a href="#" class="group flex items-center px-3 py-2 text-base font-medium rounded-md text-gray-300 hover:bg-gray-800 hover:text-white">
+                    <!-- Beaker Icon -->
+                    <svg class="mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"/><path d="M8 21h8"/><path d="M12 15v6"/><path d="M12 3c-3.33 2-5 5.33-5 12h10c0-6.67-1.67-10-5-12z"/></svg>
+                    Reactions
+                </a>
+                <a href="#" class="group flex items-center px-3 py-2 text-base font-medium rounded-md text-gray-300 hover:bg-gray-800 hover:text-white">
+                    <!-- Book Icon -->
+                    <svg class="mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v16H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                    Publications
+                </a>
+                <a href="#" class="group flex items-center px-3 py-2 text-base font-medium rounded-md text-gray-300 hover:bg-gray-800 hover:text-white">
+                    <!-- Settings Icon -->
+                    <svg class="mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.1a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1 0-2l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Settings
+                </a>
+            </nav>
+        </div>
 
-<h1>Interactive Tiger Habitat Map</h1>
+        <!-- Main content area -->
+        <div class="flex-1 flex flex-col h-full overflow-hidden">
+            <!-- Top header bar -->
+            <header class="flex-shrink-0 bg-gray-900 border-b border-gray-800">
+                <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+                    <!-- Mobile Menu Button -->
+                    <button id="open-sidebar-btn" class="md:hidden text-gray-400 hover:text-white">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                    
+                    <!-- Mock Search Bar -->
+                    <div class="flex-1 ml-4 md:ml-0">
+                        <div class="relative text-gray-400 focus-within:text-gray-200">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                <!-- Search Icon -->
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            </span>
+                            <input class="block w-full max-w-xs pl-10 pr-3 py-2 bg-gray-800 border border-gray-700 rounded-md leading-5 text-gray-200 placeholder-gray-400 focus:outline-none focus:bg-gray-700 focus:border-gray-500 focus:ring-1 focus:ring-emerald-400" type="search" placeholder="Search structures, reactions...">
+                        </div>
+                    </div>
+                    
+                    <!-- Profile Dropdown (Mock) -->
+                    <div class="ml-4 flex items-center">
+                        <span class="text-sm font-medium text-gray-300 mr-3 hidden sm:block">Dr. Carbon</span>
+                        <img class="h-8 w-8 rounded-full bg-gray-700" src="https://placehold.co/32x32/374151/9ca3af?text=C" alt="User profile">
+                    </div>
+                </div>
+            </header>
 
-<!-- Simplified SVG map to represent three tiger habitats -->
-<svg id="map" width="800" height="300" aria-label="Tiger habitats map">
-  <rect id="bengal" class="region" x="50" y="30" width="200" height="240" />
-  <rect id="siberian" class="region" x="300" y="30" width="200" height="240" />
-  <rect id="sumatran" class="region" x="550" y="30" width="200" height="240" />
-</svg>
+            <!-- 
+                Main scrolling content 
+                - Uses overflow-y-auto for independent scrolling
+            -->
+            <main class="flex-1 overflow-y-auto p-6 md:p-8 relative">
+                
+                <!-- Background decorative elements -->
+                <div class="absolute top-0 right-0 -mt-20 -mr-20 opacity-10 hidden lg:block">
+                    <svg width="404" height="404" fill="none" viewBox="0 0 404 404" role="img" aria-labelledby="svg-pattern-title">
+                        <title id="svg-pattern-title">Hexagonal Pattern</title>
+                        <defs>
+                            <pattern id="02f20b47-0e6a-4e0e-a965-1c590409c196" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                                <rect x="0" y="0" width="4" height="4" class="text-gray-800" fill="currentColor" />
+                            </pattern>
+                        </defs>
+                        <rect width="404" height="404" fill="url(#02f20b47-0e6a-4e0e-a965-1c590409c196)" />
+                    </svg>
+                </div>
+                
+                <h1 class="text-3xl font-bold text-white">Core Concepts: The Study of Carbon</h1>
+                
+                <!-- Tabbed interface -->
+                <div class="mt-6">
+                    <!-- Tab buttons -->
+                    <div class="border-b border-gray-700">
+                        <nav id="tabs" class="-mb-px flex space-x-6" aria-label="Tabs">
+                            <button class="tab-btn active text-emerald-400 border-emerald-400 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" data-tab="overview">
+                                Overview
+                            </button>
+                            <button class="tab-btn inactive text-gray-400 hover:text-gray-200 border-transparent whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" data-tab="scope">
+                                Scope & Elements
+                            </button>
+                            <button class="tab-btn inactive text-gray-400 hover:text-gray-200 border-transparent whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" data-tab="applications">
+                                Applications
+                            </button>
+                            <button class="tab-btn inactive text-gray-400 hover:text-gray-200 border-transparent whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" data-tab="fields">
+                                Related Fields
+                            </button>
+                        </nav>
+                    </div>
+                    
+                    <!-- Tab content panels -->
+                    <div class="mt-6">
+                        <!-- Overview Panel -->
+                        <div id="overview-panel" class="tab-panel active">
+                            <p class="text-lg text-gray-300 leading-relaxed">
+                                Organic chemistry is a subdiscipline within chemistry involving the scientific study of the structure, properties, and reactions of 
+                                <span class="tooltip-trigger text-emerald-400 font-medium cursor-help" data-tooltip="Matter in its various forms that contain carbon atoms">organic compounds</span> 
+                                and organic materials. Study of structure determines their structural formula. Study of properties includes physical and chemical properties, and evaluation of 
+                                <span class="tooltip-trigger text-emerald-400 font-medium cursor-help" data-tooltip="The tendency of a chemical species to undergo a chemical reaction">chemical reactivity</span>
+                                to understand their behavior. The study of organic reactions includes the chemical synthesis of natural products, drugs, and polymers, and study of individual organic molecules in the laboratory and via theoretical (in silico) study.
+                            </p>
+                        </div>
+                        
+                        <!-- Scope Panel -->
+                        <div id="scope-panel" class="tab-panel hidden">
+                            <p class="text-lg text-gray-300 leading-relaxed">
+                                The range of chemicals studied in organic chemistry includes 
+                                <span class="tooltip-trigger text-emerald-400 font-medium cursor-help" data-tooltip="Compounds containing only carbon and hydrogen">hydrocarbons</span>
+                                as well as compounds based on carbon, but also containing other elements, especially oxygen, nitrogen, sulfur, phosphorus (included in many biochemicals) and the halogens. 
+                                <span class="tooltip-trigger text-emerald-400 font-medium cursor-help" data-tooltip="The study of compounds containing carbon–metal bonds">Organometallic chemistry</span>
+                                is the study of compounds containing carbon–metal bonds.
+                            </p>
+                        </div>
 
-<div class="info-tabs">
-  <div class="tab active" data-tab="bengal-info">Bengal Tiger</div>
-  <div class="tab" data-tab="siberian-info">Siberian Tiger</div>
-  <div class="tab" data-tab="sumatran-info">Sumatran Tiger</div>
-</div>
+                        <!-- Applications Panel -->
+                        <div id="applications-panel" class="tab-panel hidden">
+                            <p class="text-lg text-gray-300 leading-relaxed">
+                                Organic compounds form the basis of all earthly life and constitute the majority of known chemicals. The bonding patterns of carbon, with its valence of four—formal single, double, and triple bonds, plus structures with delocalized electrons—make the array of organic compounds structurally diverse, and their range of applications enormous. They form the basis of, or are constituents of, many commercial products including:
+                            </p>
+                            <ul class="list-disc list-inside text-gray-300 space-y-2 mt-4 pl-4">
+                                <li>Pharmaceuticals</li>
+                                <li>Petrochemicals and agrichemicals</li>
+                                <li>Lubricants and solvents</li>
+                                <li>Plastics, fuels, and explosives</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Related Fields Panel -->
+                        <div id="fields-panel" class="tab-panel hidden">
+                            <p class="text-lg text-gray-300 leading-relaxed">
+                                The study of organic chemistry overlaps with 
+                                <span class="tooltip-trigger text-emerald-400 font-medium cursor-help" data-tooltip="The study of compounds containing carbon–metal bonds">organometallic chemistry</span>
+                                and 
+                                <span class="tooltip-trigger text-emerald-400 font-medium cursor-help" data-tooltip="The study of chemical processes within living organisms">biochemistry</span>, 
+                                but also with medicinal chemistry, polymer chemistry, and materials science.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 
+                    Interactive Module: Molecule Explorer 
+                    This is the "complex" part of the POC
+                -->
+                <div class="mt-12 bg-gray-950 border border-gray-800 rounded-lg shadow-xl overflow-hidden">
+                    <div class="p-6 border-b border-gray-800">
+                        <h2 class="text-xl font-semibold text-white">Molecule Explorer</h2>
+                        <p class="text-sm text-gray-400 mt-1">Select a molecule to view its structure (Proof of Concept).</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-px">
+                        <!-- Molecule Selection -->
+                        <div class="md:col-span-1 bg-gray-900 p-6">
+                            <div class="space-y-3">
+                                <button class="mol-btn w-full text-left px-4 py-3 bg-gray-800 hover:bg-gray-700 rounded-md transition duration-150" data-molecule="benzene">
+                                    <span class="font-medium text-white">Benzene</span>
+                                    <span class="block text-sm text-gray-400">C₆H₆ - Aromatic Hydrocarbon</span>
+                                </button>
+                                <button class="mol-btn w-full text-left px-4 py-3 bg-gray-800 hover:bg-gray-700 rounded-md transition duration-150" data-molecule="methane">
+                                    <span class="font-medium text-white">Methane</span>
+                                    <span class="block text-sm text-gray-400">CH₄ - Simplest Alkane</span>
+                                </button>
+                                <button class="mol-btn w-full text-left px-4 py-3 bg-gray-800 hover:bg-gray-700 rounded-md transition duration-150" data-molecule="ethanol">
+                                    <span class="font-medium text-white">Ethanol</span>
+                                    <span class="block text-sm text-gray-400">C₂H₅OH - An Alcohol</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Molecule Viewer Pane -->
+                        <div class="md:col-span-2 bg-gray-900 p-6 min-h-[300px] flex items-center justify-center relative overflow-hidden">
+                            <!-- Placeholder -->
+                            <div id="molecule-placeholder" class="text-center text-gray-600">
+                                <svg class="mx-auto h-16 w-16" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="m12 16 2-4-2-4"/><path d="m16 12-4-4"/></svg>
+                                <p class="mt-2 text-sm font-medium">Select a molecule to display</p>
+                            </div>
+                            
+                            <!-- Benzene SVG -->
+                            <div id="benzene-display" class="molecule-display hidden float-animation w-4/5 max-w-xs">
+                                <svg viewBox="0 0 100 100" class="benzene-svg">
+                                    <polygon points="50,10 93,35 93,75 50,90 7,75 7,35"/>
+                                    <circle cx="50" cy="50" r="25" fill="none" stroke-dasharray="8 8"/>
+                                </svg>
+                                <p class="text-center text-sm text-gray-400 mt-4">Benzene (C₆H₆)</p>
+                            </div>
 
-<div id="bengal-info" class="tab-content active">
-  <h2>Bengal Tiger</h2>
-  <p>The Bengal tiger is found mainly in India and Bangladesh. It is the most numerous tiger subspecies, known for its vibrant orange coat with black stripes.</p>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/2/25/BengalTiger.jpg" alt="Bengal Tiger" />
-  <p><strong>Conservation Status:</strong> Endangered</p>
-</div>
+                            <!-- Methane SVG -->
+                            <div id="methane-display" class="molecule-display hidden float-animation w-4/5 max-w-xs">
+                                <svg viewBox="0 0 100 100" class="methane-svg">
+                                    <!-- Bonds -->
+                                    <line x1="50" y1="50" x2="50" y2="20" class="bond" />
+                                    <line x1="50" y1="50" x2="20" y2="65" class="bond" />
+                                    <line x1="50" y1="50" x2="80" y2="65" class="bond" />
+                                    <line x1="50" y1="50" x2="50" y2="85" class="bond" />
+                                    <!-- Atoms -->
+                                    <circle cx="50" cy="50" r="12" class="carbon" />
+                                    <circle cx="50" cy="20" r="8" class="hydrogen" />
+                                    <circle cx="20" cy="65" r="8" class="hydrogen" />
+                                    <circle cx="80" cy="65" r="8" class="hydrogen" />
+                                    <circle cx="50" cy="85" r="8" class="hydrogen" />
+                                </svg>
+                                <p class="text-center text-sm text-gray-400 mt-4">Methane (CH₄)</p>
+                            </div>
+                            
+                            <!-- Ethanol SVG -->
+                            <div id="ethanol-display" class="molecule-display hidden float-animation w-4/5 max-w-xs">
+                                <svg viewBox="0 0 130 100" class="ethanol-svg">
+                                    <!-- Bonds -->
+                                    <line x1="30" y1="50" x2="60" y2="50" class="bond" />
+                                    <line x1="60" y1="50" x2="90" y2="50" class="bond" />
+                                    <line x1="30" y1="50" x2="15" y2="30" class="bond" />
+                                    <line x1="30" y1="50" x2="15" y2="70" class="bond" />
+                                    <line x1="30" y1="50" x2="45" y2="30" class="bond" />
+                                    <line x1="60" y1="50" x2="75" y2="30" class="bond" />
+                                    <line x1="60" y1="50" x2="75" y2="70" class="bond" />
+                                    <line x1="90" y1="50" x2="105" y2="30" class="bond" />
+                                    
+                                    <!-- Atoms -->
+                                    <circle cx="30" cy="50" r="10" class="carbon" /> <!-- C1 -->
+                                    <circle cx="60" cy="50" r="10" class="carbon" /> <!-- C2 -->
+                                    <circle cx="90" cy="50" r="10" class="oxygen" /> <!-- O -->
+                                    
+                                    <circle cx="15" cy="30" r="6" class="hydrogen" />
+                                    <circle cx="15" cy="70" r="6" class="hydrogen" />
+                                    <circle cx="45" cy="30" r="6" class="hydrogen" />
+                                    <circle cx="75" cy="30" r="6" class="hydrogen" />
+                                    <circle cx="75" cy="70" r="6" class="hydrogen" />
+                                    <circle cx="105" cy="30" r="6" class="hydrogen" /> <!-- H on O -->
+                                </svg>
+                                <p class="text-center text-sm text-gray-400 mt-4">Ethanol (C₂H₅OH)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-<div id="siberian-info" class="tab-content">
-  <h2>Siberian Tiger</h2>
-  <p>The Siberian tiger inhabits the Russian Far East. It is the largest tiger subspecies and has a thicker, paler coat to survive cold winters.</p>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Tiger.50.jpg" alt="Siberian Tiger" />
-  <p><strong>Conservation Status:</strong> Endangered</p>
-</div>
+                <!-- Custom Tooltip Element (Hidden by default) -->
+                <div id="tooltip" class="hidden absolute z-40 px-3 py-2 text-sm font-medium text-white bg-gray-950 border border-gray-700 rounded-md shadow-lg" role="tooltip">
+                    <span id="tooltip-text"></span>
+                    <div id="tooltip-arrow" class="absolute" data-popper-arrow></div>
+                </div>
 
-<div id="sumatran-info" class="tab-content">
-  <h2>Sumatran Tiger</h2>
-  <p>Native to the Indonesian island of Sumatra, this tiger is smaller and darker with thicker stripes, adapted to dense tropical forests.</p>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/f/fd/Sumatran-tiger-edit.jpg" alt="Sumatran Tiger" />
-  <p><strong>Conservation Status:</strong> Critically Endangered</p>
-</div>
+            </main>
+        </div>
+    </div>
 
-<script>
-  // Tab switching
-  const tabs = document.querySelectorAll('.tab');
-  const contents = document.querySelectorAll('.tab-content');
-  const mapRegions = {
-    bengal: document.getElementById('bengal'),
-    siberian: document.getElementById('siberian'),
-    sumatran: document.getElementById('sumatran')
-  };
+    <!-- 
+        JavaScript for Interactivity 
+        - Tab switching
+        - Molecule viewer logic
+        - Sidebar toggling
+        - Tooltip logic
+    -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- Tabbed Interface Logic ---
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+                    
+                    // Update button active state
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('active', 'text-emerald-400', 'border-emerald-400');
+                        btn.classList.add('inactive', 'text-gray-400', 'hover:text-gray-200', 'border-transparent');
+                    });
+                    button.classList.add('active', 'text-emerald-400', 'border-emerald-400');
+                    button.classList.remove('inactive', 'text-gray-400', 'hover:text-gray-200', 'border-transparent');
+                    
+                    // Update panel visibility
+                    tabPanels.forEach(panel => {
+                        if (panel.id === `${tabId}-panel`) {
+                            panel.classList.remove('hidden');
+                            panel.classList.add('active');
+                        } else {
+                            panel.classList.add('hidden');
+                            panel.classList.remove('active');
+                        }
+                    });
+                });
+            });
 
-  function activateTab(tabName) {
-    tabs.forEach(tab => {
-      tab.classList.toggle('active', tab.dataset.tab === tabName + '-info');
-    });
-    contents.forEach(content => {
-      content.classList.toggle('active', content.id === tabName + '-info');
-    });
-  }
+            // --- Molecule Explorer Logic ---
+            const molButtons = document.querySelectorAll('.mol-btn');
+            const molDisplays = document.querySelectorAll('.molecule-display');
+            const placeholder = document.getElementById('molecule-placeholder');
+            
+            molButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const moleculeId = button.getAttribute('data-molecule');
+                    
+                    // Hide placeholder
+                    placeholder.classList.add('hidden');
+                    
+                    // Hide all displays
+                    molDisplays.forEach(display => {
+                        display.classList.add('hidden');
+                    });
+                    
+                    // Show the correct display
+                    const activeDisplay = document.getElementById(`${moleculeId}-display`);
+                    if (activeDisplay) {
+                        activeDisplay.classList.remove('hidden');
+                    }
 
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      activateTab(tab.dataset.tab.replace('-info', ''));
-    });
-  });
+                    // Update button active state
+                    molButtons.forEach(btn => btn.classList.remove('bg-gray-700'));
+                    button.classList.add('bg-gray-700');
+                });
+            });
 
-  Object.keys(mapRegions).forEach(region => {
-    mapRegions[region].addEventListener('click', () => {
-      activateTab(region);
-    });
-  });
-</script>
+            // --- Mobile Sidebar Logic ---
+            const sidebar = document.getElementById('sidebar');
+            const openBtn = document.getElementById('open-sidebar-btn');
+            const closeBtn = document.getElementById('close-sidebar-btn');
+            
+            openBtn.addEventListener('click', () => {
+                sidebar.classList.remove('-translate-x-full');
+            });
+            
+            closeBtn.addEventListener('click', ()s => {
+                sidebar.classList.add('-translate-x-full');
+            });
 
+            // --- Tooltip Logic ---
+            // This is a simplified tooltip; a real implementation might use Popper.js
+            const tooltipTriggers = document.querySelectorAll('.tooltip-trigger');
+            const tooltipEl = document.getElementById('tooltip');
+            const tooltipText = document.getElementById('tooltip-text');
+
+            tooltipTriggers.forEach(trigger => {
+                trigger.addEventListener('mouseenter', (e) => {
+                    const text = trigger.getAttribute('data-tooltip');
+                    tooltipText.textContent = text;
+                    
+                    const rect = trigger.getBoundingClientRect();
+                    tooltipEl.classList.remove('hidden');
+                    
+                    // Position tooltip above the trigger
+                    tooltipEl.style.left = `${rect.left + (rect.width / 2) - (tooltipEl.offsetWidth / 2)}px`;
+                    tooltipEl.style.top = `${rect.top - tooltipEl.offsetHeight - 8}px`; // 8px arrow
+                });
+                
+                trigger.addEventListener('mouseleave', () => {
+                    tooltipEl.classList.add('hidden');
+                });
+            });
+        });
+    </script>
 </body>
 </html>
-
-
